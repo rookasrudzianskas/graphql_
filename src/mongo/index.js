@@ -13,10 +13,18 @@ const client = new MongoClient(uri, {
 export async function setupDatabase() {
   try {
     await client.connect();
+    const db = client.db('sample_mflix');
+
     return {
       client,
-    }
-  } catch (e) {
-    console.error(e);
+      db,
+      users: db.collection('users'),
+      movies: db.collection('movies'),
+      comments: db.collection('comments'),
+    };
+  } catch (err) {
+    console.log('Error connecting to the databased');
+
+    return {};
   }
 }

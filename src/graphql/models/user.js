@@ -32,7 +32,9 @@ export const resolvers = {
   },
 
   Mutation: {
-    createUser: (_, { user }) => {
+    createUser: async (_, {user}, context) => {
+      const movies = await context.db.collection('movies').find().toArray();
+      console.log(movies);
       return {
         id: 1,
         ...user,

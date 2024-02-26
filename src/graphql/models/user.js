@@ -1,7 +1,9 @@
 import {setupDatabase} from "../../mongo/index.js";
+import {ObjectId} from "mongodb";
 
 export const typeDef = /* GraphQL */ `
     type Query {
+        users: [User!]!
         user: User
     }
 
@@ -15,26 +17,29 @@ export const typeDef = /* GraphQL */ `
     }
 
     type User {
-        id: Int
+        id: ID!
         name: String
-        age: Int
+        email: String
     }
 `;
 
 export const resolvers = {
   Query: {
-    user: () => {
-      return {
-        id: 1,
-        name: 'Rokas',
-      };
+    users: (obj, args, { mongo }) => {
+      return mongo.users.find().limit(20).toArray();
+    },
+
+    user: async (obj, { id }, { mongo }) => {
+      return mongo.users.findOne({ _id: new ObjectId(id) });
     },
   },
 
+
   Mutation: {
-    createUser: async (_, {user}, context) => {
-      const movies = await context.db.collection('movies').find().toArray();
+    createUser: async (_, { user }, { mongo }) => {
+      const movies = await mongo.movies.find().toArray();
       console.log(movies);
+      // insert into DB
       return {
         id: 1,
         ...user,
@@ -43,6 +48,7 @@ export const resolvers = {
   },
 
   User: {
+    id: ({ id, _id }) => _id || id,
     name: (obj) => {
       return obj.name.trim().toUpperCase();
     },

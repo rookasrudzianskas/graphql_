@@ -1,4 +1,3 @@
-import {setupDatabase} from "../../mongo/index.js";
 import {ObjectId} from "mongodb";
 
 export const typeDef = /* GraphQL */ `

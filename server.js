@@ -1,4 +1,6 @@
 import { graphql, buildSchema } from "graphql"
+import express from "express"
+import { createHandler } from "graphql-http/lib/use/express"
 
 // Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
@@ -18,11 +20,8 @@ var rootValue = {
   },
 }
 
-// Run the GraphQL query '{ hello }' and print out the response
-graphql({
-  schema,
-  source: "{ age }",
-  rootValue,
-}).then(response => {
-  console.log(response)
-})
+const app = express();
+app.all('/graphql', createHandler({ schema, rootValue }));
+
+app.listen(4000);
+console.log('Server running on http://localhost:4000/graphql');

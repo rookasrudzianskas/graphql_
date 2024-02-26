@@ -1,21 +1,20 @@
 import { createSchema } from 'graphql-yoga';
 import { typeDef as User, resolvers as userResolvers } from './models/user.js';
-// import {
-//   typeDef as Comment,
-//   resolvers as commentResolvers,
-// } from './models/comments.js';
-
 import _ from 'lodash';
 
-export const schema = createSchema({
-  typeDefs: `
+const queries = /* GraphQL */ `
     type Query {
-      hello: String
+        hello: String
     }
-  `,
-  resolvers: {
-    Query: {
-      hello: () => 'Hello world!',
-    },
+`;
+
+const resolvers = {
+  Query: {
+    hello: () => 'Hello from Yoga!',
   },
+};
+
+export const schema = createSchema({
+  typeDefs: [queries, User],
+  resolvers: _.merge(resolvers, userResolvers),
 });

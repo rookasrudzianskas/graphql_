@@ -1,4 +1,4 @@
-import {graphql, buildSchema, GraphQLSchema, GraphQLObjectType, GraphQLString} from "graphql";
+import {graphql, buildSchema, GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt} from "graphql";
 import express from "express";
 import { createHandler } from "graphql-http/lib/use/express";
 import { ruruHTML } from "ruru/server";
@@ -24,8 +24,16 @@ import { ruruHTML } from "ruru/server";
 const User = new GraphQLObjectType({
   name: "User",
   fields: {
-    id: { type: GraphQLString },
-    name: { type: GraphQLString },
+    id: { type: GraphQLInt },
+    name: { type: GraphQLString, resolve: (obj) => {
+       console.log("OBJ", obj);
+       const name = obj.name.trim().toLowerCase();
+       if(obj.isAdmin) {
+          return name.toUpperCase() + " (ADMIN)";
+       }
+       return obj.name;
+      }
+    },
   }
 });
 
@@ -39,6 +47,17 @@ const schema = new GraphQLSchema({
           return "Hello World"
         },
       },
+      user: {
+        type: User,
+        resolve: () => {
+          return {
+            id: 1,
+            name: "John Doe",
+            extra: "Extra",
+            isAdmin: true,
+          }
+        }
+      }
     }
   })
 })

@@ -1,18 +1,23 @@
 import express from 'express';
 import { ruruHTML } from 'ruru/server';
 
-import { createYoga } from 'graphql-yoga';
-import { schema } from './src/graphql/index.js';
-import { setupDatabase } from './src/mongo/index.js';
+import {createSchema, createYoga} from 'graphql-yoga';
+// import { schema } from './src/graphql/index.js';
+// import { setupDatabase } from './src/mongo/index.js';
 
 const yoga = createYoga({
-  schema,
-  context: async () => {
-    const mongo = await setupDatabase();
-    return {
-      mongo,
-    };
-  },
+  schema: createSchema({
+    typeDefs:`
+      type Query {
+        hello: String
+      }
+    `,
+    resolvers:{
+      Query:{
+        hello:()=> 'Hello From Yoga!'
+      }
+    }
+  }),
 });
 
 const app = express();

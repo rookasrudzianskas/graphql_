@@ -3,10 +3,16 @@ import { ruruHTML } from 'ruru/server';
 
 import {createSchema, createYoga} from 'graphql-yoga';
 import {schema} from "./src/graphql/index.js";
-// import { setupDatabase } from './src/mongo/index.js';
+import { setupDatabase } from './src/mongo/index.js';
 
 const yoga = createYoga({
   schema,
+  context: async () => {
+    const mongo = await setupDatabase();
+    return {
+      mongo,
+    };
+  },
 });
 
 const app = express();

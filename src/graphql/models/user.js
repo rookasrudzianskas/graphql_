@@ -1,3 +1,5 @@
+import {setupDatabase} from "../../mongo/index.js";
+
 export const typeDef = /* GraphQL */ `
     type Query {
         user: User
@@ -31,7 +33,6 @@ export const resolvers = {
 
   Mutation: {
     createUser: (_, { user }) => {
-      // insert into DB
       return {
         id: 1,
         ...user,

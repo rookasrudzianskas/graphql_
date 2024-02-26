@@ -1,4 +1,4 @@
-import {graphql, buildSchema, GraphQLSchema, GraphQLObjectType} from "graphql";
+import {graphql, buildSchema, GraphQLSchema, GraphQLObjectType, GraphQLString} from "graphql";
 import express from "express";
 import { createHandler } from "graphql-http/lib/use/express";
 import { ruruHTML } from "ruru/server";
@@ -21,87 +21,35 @@ import { ruruHTML } from "ruru/server";
 //   }
 // `)
 
+const User = new GraphQLObjectType({
+  name: "User",
+  fields: {
+    id: { type: GraphQLString },
+    name: { type: GraphQLString },
+  }
+});
+
 const schema = new GraphQLSchema({
   query: new GraphQLObjectType({
     name: "Query",
     fields: {
       hello: {
-        type: "String",
-        args: {
-          name: {
-            type: "String",
-            required: true
-          }
+        type: GraphQLString,
+        resolve: () => {
+          return "Hello World"
         },
-        resolve: (_source, { name }) => `Hello ${name}!`
       },
-      age: {
-        type: "Int",
-        resolve: () => 25
-      },
-      weight: {
-        type: "Float",
-        resolve: () => 75.5
-      },
-      isOver18: {
-        type: "Boolean",
-        resolve: () => true
-      },
-      hobbies: {
-        type: "[String]",
-        resolve: () => ["Coding", "Gaming", "Reading"]
-      },
-      user: {
-        type: "User",
-        resolve: () => ({
-          id: 1,
-          name: "John Doe"
-        })
-      },
-      post: {
-        type: "Post",
-        resolve: () => ({
-          id: 1,
-          title: "Hello World"
-        })
-      }
     }
   })
 })
 
 // The rootValue provides a resolver function for each API endpoint
 var rootValue = {
-  hello: ({ name }) => {
-    return `Hello ${name}!`
-  },
-  age: () => {
-    return 25
-  },
-  weight: () => {
-    return 75.5
-  },
-  isOver18: () => {
-    return true
-  },
-  hobbies: () => {
-    return ["Coding", "Gaming", "Reading"]
-  },
-  user: () => {
-    return {
-      id: 1,
-      name: "John Doe"
-    }
-  },
-  post: () => {
-    return {
-      id: 1,
-      title: "Hello World"
-    }
-  }
+
 }
 
 const app = express();
-app.all('/graphql', createHandler({ schema, rootValue }));
+app.all('/graphql', createHandler({ schema }));
 
 app.get("/", (_req, res) => {
   res.type("html")
